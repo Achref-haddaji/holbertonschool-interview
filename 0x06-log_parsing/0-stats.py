@@ -10,7 +10,7 @@ count = 0
 
 
 def print_output():
-    """ print the status acording"""
+    """ Print codes and numbers"""
     print("File size: {}".format(file_size))
     for a, b in sorted(errors.items()):
         if b != 0:
