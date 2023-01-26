@@ -3,7 +3,7 @@
 import fileinput
 
 
-errors = {'200': 0, '301': 0, '400': 0,
+status_code  = {'200': 0, '301': 0, '400': 0,
                '401': 0, '403': 0, '404': 0, '405': 0, '500': 0}
 file_size = 0
 count = 0
@@ -12,7 +12,7 @@ count = 0
 def print_output():
     """ Print codes and numbers"""
     print("File size: {}".format(file_size))
-    for a, b in sorted(errors.items()):
+    for a, b in sorted(status_code .items()):
         if b != 0:
             print("{}: {}".format(a, b))
 
@@ -24,8 +24,8 @@ if __name__ == "__main__":
         for i in fileinput.input():
             try:
                 data = i.split(" ")
-                if data[-2] in errors.keys():
-                    errors[data[-2]] += 1
+                if data[-2] in status_code .keys():
+                    status_code [data[-2]] += 1
                 file_size += int(data[-1])
                 count += 1
             except Exception:
