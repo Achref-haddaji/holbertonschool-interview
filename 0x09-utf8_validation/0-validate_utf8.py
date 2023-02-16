@@ -36,5 +36,4 @@ def validUTF8(data):
             # decrement count by 1
             count -= 1
     # if count is not 0, it means we have not received all the bytes
-    # so the encoding is not valid
-    return True
+    return count == 0
