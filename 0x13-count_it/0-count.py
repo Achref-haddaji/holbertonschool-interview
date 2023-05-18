@@ -1,49 +1,39 @@
 #!/usr/bin/python3
-'''Get ALL hot posts'''
-import pprint
-import re
+""" Reddit hot article word count """
 import requests
 
-BASE_URL = 'http://reddit.com/r/{}/hot.json'
 
+def count_words(subreddit, word_list, after='', words_counting={}):
+    """ Word counting function """
 
-def count_words(subreddit, word_list, hot_list=[], after=None):
-    '''Get ALL hot posts'''
-    headers = {'User-agent': 'Unix:0-subs:v1'}
-    params = {'limit': 100}
-    if isinstance(after, str):
-        if after != "STOP":
-            params['after'] = after
-        else:
-            return print_results(word_list, hot_list)
+    url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
+    headers = {'User-Agent': 'custom'}
+    payload = {'limit': '100', 'after': after}
+    response = requests.get(url, headers=headers,
+                            params=payload, allow_redirects=False)
 
-    response = requests.get(BASE_URL.format(subreddit),
-                            headers=headers, params=params)
-    if response.status_code != 200:
-        return None
-    data = response.json().get('data', {})
-    after = data.get('after', 'STOP')
-    if not after:
-        after = "STOP"
-    hot_list = hot_list + [post.get('data', {}).get('title')
-                           for post in data.get('children', [])]
-    return count_words(subreddit, word_list, hot_list, after)
+    if not response.status_code == 200:
+        return
+    data = response.json().get('data')
+    after = data.get('after')
+    children_list = data.get('children')
 
-
-def print_results(word_list, hot_list):
-    '''Prints request results'''
-    count = {}
-    for word in word_list:
-        count[word] = 0
-    for title in hot_list:
+    for child in children_list:
+        title = child.get('data').get('title')
         for word in word_list:
-            for title_word in title.lower().split():
-                if title_word == word.lower():
-                    count[word] += 1
+            ocurrences = title.lower().split().count(word.lower())
+            if ocurrences > 0:
+                if word in words_counting:
+                    words_counting[word] += ocurrences
+                else:
+                    words_counting[word] = ocurrences
 
-    count = {k: v for k, v in count.items() if v > 0}
-    words = list(count.keys())
-    for word in sorted(words,
-                       reverse=True, key=lambda k: count[k]):
-        print("{}: {}".format(word, count[word]))
-		
+    if after is not None:
+        return count_words(subreddit, word_list, after, words_counting)
+    else:
+        if not len(words_counting) > 0:
+            return
+        iterator = sorted(words_counting.items(),
+                          key=lambda kv: (-kv[1], kv[0]))
+        for key, value in iterator:
+            print('{}: {}'.format(key.lower(), value))
