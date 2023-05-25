@@ -1,117 +1,100 @@
-#include <stdlib.h>
-#include <unistd.h>
+#include "holberton.h"
 
-int _putchar(char c)
+/**
+ * is_digit - checks if the argument is a number
+ * @str: argument
+ * Return: 0 on failure, 1 on success
+ **/
+int is_digit(char *str)
 {
-	return (write(1, &c, 1));
-}
-
-int is_digit(char c)
-{
-	return (c >= '0' && c <= '9');
-}
-
-int is_positive_number(char *str)
-{
-	if (*str == '\0')
-		return (0);
-
 	while (*str)
 	{
-		if (!is_digit(*str))
+		if (*str < '0' || *str > '9')
 			return (0);
 		str++;
 	}
-
 	return (1);
 }
 
-int string_length(char *str)
+/**
+ * _strlen - find the length of a string
+ * @str: a string
+ * Return: the length of the string
+ **/
+int _strlen(char *str)
 {
-	int length = 0;
+	char *ptr = str;
 
-	while (str[length] != '\0')
-		length++;
-
-	return (length);
+	while (*str)
+		str++;
+	return (str - ptr);
 }
 
-void print_error(void)
+/**
+ * multiply - multiplies two numbers
+ * @num1: first number
+ * @num2: second number
+ * Return: Nothing
+ **/
+void multiply(char *num1, char *num2)
 {
-	int i;
-	char error_msg[] = "Error\n";
+	int i, len_num1, len_num2, total, digit_num1, digit_num2, result = 0, tmp;
+	int *ptr;
 
-	for (i = 0; i < 6; i++)
-		_putchar(error_msg[i]);
-}
+	len_num1 = _strlen(num1);
+	len_num2 = _strlen(num2);
+	tmp = len_num2;
+	total = len_num1 + len_num2;
+	ptr = malloc(sizeof(int) * total);
+	if (!ptr)
+		return;
 
-void print_number(char *number)
-{
-	int i;
-
-	for (i = 0; i < string_length(number); i++)
-		_putchar(number[i]);
-	_putchar('\n');
-}
-
-char *multiply(char *num1, char *num2)
-{
-	int len1 = string_length(num1);
-	int len2 = string_length(num2);
-	int len_result = len1 + len2;
-	int i, j;
-	int carry, product;
-	char *result;
-
-	result = malloc(sizeof(char) * (len_result + 1));
-
-	if (result == NULL)
-		return (NULL);
-
-	for (i = 0; i < len_result; i++)
-		result[i] = '0';
-
-	for (i = len1 - 1; i >= 0; i--)
+	for (len_num1--; len_num1 >= 0; len_num1--)
 	{
-		carry = 0;
+		digit_num1 = num1[len_num1] - '0';
+		result = 0;
+		len_num2 = tmp;
 
-		for (j = len2 - 1; j >= 0; j--)
+		for (len_num2--; len_num2 >= 0; len_num2--)
 		{
-			product = (num1[i] - '0') * (num2[j] - '0') + (result[i + j + 1] - '0') + carry;
-			carry = product / 10;
-			result[i + j + 1] = (product % 10) + '0';
+			digit_num2 = num2[len_num2] - '0';
+			result += ptr[len_num2 + len_num1 + 1] + (digit_num1 * digit_num2);
+			ptr[len_num1 + len_num2 + 1] = result % 10;
+			result /= 10;
 		}
 
-		result[i] += carry;
+		if (result)
+			ptr[len_num1 + len_num2 + 1] = result % 10;
 	}
 
-	return (result);
+	while (*ptr == 0)
+	{
+		ptr++;
+		total--;
+	}
+
+	for (i = 0; i < total; i++)
+		printf("%i", ptr[i]);
+	printf("\n");
 }
 
+/**
+ * main - Entry point
+ * @argc: argument count
+ * @argv: argument values
+ * Return: 0 on success
+ **/
 int main(int argc, char *argv[])
 {
-	char *num1, *num2;
-	char *result;
+	char *num1 = argv[1];
+	char *num2 = argv[2];
 
-	if (argc != 3 || !is_positive_number(argv[1]) || !is_positive_number(argv[2]))
+	if (argc != 3 || !is_digit(num1) || !is_digit(num2))
 	{
-		print_error();
-		return (98);
+		printf("Error\n");
+		exit(98);
 	}
 
-	num1 = argv[1];
-	num2 = argv[2];
-
-	result = multiply(num1, num2);
-
-	if (result == NULL)
-	{
-		print_error();
-		return (98);
-	}
-
-	print_number(result);
-	free(result);
-
+	multiply(num1, num2);
 	return (0);
 }
