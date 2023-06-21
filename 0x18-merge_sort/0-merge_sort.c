@@ -1,63 +1,97 @@
 #include "sort.h"
 /**
- * merging - merge fragment
- * @array: original array
- * @coppy: copy of array
- * @low: index of start
- * @mid: index of mid
- * @high: index of end
+ * merge - merge two arraies
+ * @array: array to sort
+ * @copy: a copy of the array to sort
+ * @start: start index
+ * @end:  end index
+ * @mid: mid index
  */
-void merging(int *array, int *coppy, size_t low, size_t mid, size_t high)
+void merge(int *array, int start, int mid, int end, int *copy)
 {
-	size_t i, l, r;
+	int s = start;
+	int m = mid;
+	int i = 0;
 
-	printf("Merging...\n[left]: ");
-	print_array(coppy + low, mid - low);
-	printf("[right]: ");
-	print_array(coppy + mid, high - mid);
-	for (i = l = low, r = mid; i < high; ++i)
+	for (i = start; i < end; i++)
 	{
-		if (l < mid && (r >= high || coppy[l] <= coppy[r]))
-			array[i] = coppy[l++];
-		else
-			array[i] = coppy[r++];
-	}
-	printf("[Done]: ");
-	print_array(array + low, high - low);
-}
-/**
- * rec_merge - devide array
- * @array: original array
- * @coppy: copy of array
- * @low: index of start
- * @high: index of end
- */
-void rec_merge(int *array, int *coppy, size_t low, size_t high)
-{
-	size_t mid;
 
-	if (high - low <= 1)
-		return;
-	mid = (low + high) / 2;
-	rec_merge(coppy, array, low, mid);
-	rec_merge(coppy, array, mid, high);
-	merging(array, coppy, low, mid, high);
+		if (s < mid && (m >= end || copy[s] <= copy[m]))
+		{
+			array[i] = copy[s];
+			s = s + 1;
+		}
+		else
+		{
+			array[i] = copy[m];
+			m = m + 1;
+		}
+	}
 }
 /**
- * merge_sort - sort array
- * @array: original array
- * @size: size of array
+ *split - split  array
+ *@array: array to sort
+ *@sorted_array: a copy of the array to sort
+ *@firsthalf: start index of the array
+ *@secondehalf: end index of the array
  */
+void split(int *array, int firsthalf, int secondehalf, int *sorted_array)
+{
+	int mid = (firsthalf + secondehalf) / 2;
+	int i = 0;
+
+	if (secondehalf - firsthalf <= 1)
+		return;
+
+	split(sorted_array, firsthalf, mid, array);
+	split(sorted_array, mid, secondehalf, array);
+	printf("Merging...\n");
+
+	printf("[left]: ");
+	for (i = firsthalf; i < mid; i++)
+	{
+		printf("%d", sorted_array[i]);
+		if (i < mid - 1)
+			printf(", ");
+	}
+
+	printf("\n[right]: ");
+	for (i = mid; i < secondehalf; i++)
+	{
+		printf("%d", sorted_array[i]);
+		if (i < secondehalf - 1)
+			printf(", ");
+	}
+
+	merge(array, firsthalf, mid, secondehalf, sorted_array);
+
+	printf("\n");
+	printf("[Done]: ");
+	for (i = firsthalf; i < secondehalf; i++)
+	{
+		printf("%d", array[i]);
+		if (i < secondehalf - 1)
+			printf(", ");
+	}
+	printf("\n");
+}
+
+/**
+ * merge_sort -  sort array using merge sort
+ * @array: array to sort
+ * @size: size of the array
+ */
+
 void merge_sort(int *array, size_t size)
 {
-	int *coppy;
+	int *copy;
+	size_t a = 0;
 
-	if (size == 1)
-		return;
-	coppy = malloc(size * sizeof(*array));
-	if (!coppy)
-		return;
-	memcpy(coppy, array, size * sizeof(*coppy));
-	rec_merge(array, coppy, 0, size);
-	free(coppy);
+	copy = malloc(sizeof(int) * size);
+
+	for (a = 0; a < size; a++)
+		copy[a] = array[a];
+
+	split(array, 0, size, copy);
+	free(copy);
 }
