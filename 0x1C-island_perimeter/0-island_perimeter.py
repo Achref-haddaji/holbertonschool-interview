@@ -1,20 +1,27 @@
 #!/usr/bin/python3
+"""island_perimeter
+    """
 
-""" Function to find the perimeter of an island """
 
+def island_perimeter(grid):
+    """_summary_
 
-def find_island_perimeter(grid):
-    """ Function to find the perimeter of an island """
+    Args:
+        grid (list): list of sea of 0 that hold a island if 1
+
+    Returns:
+        int: perimeter of the island
+    """
     perimeter = 0
-    for x in range(len(grid)):
-        for y in range(len(grid[x])):
-            if grid[x][y] == 1:
-                if x - 1 < 0 or grid[x - 1][y] == 0:
-                    perimeter += 1
-                if x + 1 >= len(grid) or grid[x + 1][y] == 0:
-                    perimeter += 1
-                if y - 1 < 0 or grid[x][y - 1] == 0:
-                    perimeter += 1
-                if y + 1 >= len(grid[x]) or grid[x][y + 1] == 0:
-                    perimeter += 1
+    land = 0
+    neighbor = 0
+    for i in range(len(grid)):
+        for j in range(len(grid[i])):
+            if grid[i][j] == 1:
+                land += 1
+                if i != (len(grid) - 1) and grid[i + 1][j] == 1:
+                    neighbor += 1
+                if j != (len(grid[i]) - 1) and grid[i][j + 1] == 1:
+                    neighbor += 1
+    perimeter = (land * 4) - (neighbor * 2)
     return perimeter
