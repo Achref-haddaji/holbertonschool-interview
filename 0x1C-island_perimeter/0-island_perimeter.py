@@ -1,24 +1,21 @@
 #!/usr/bin/python3
 
-""" Function  that returns the perimeter of the island described in grid """
+""" Function to find perimiter of an island """
 
 
 def island_perimeter(grid):
-    if not grid or not grid[0]:
-        return 0
-
-    perimeter = 0
-    rows, cols = len(grid), len(grid[0])
-
-    for r in range(rows):
-        for c in range(cols):
-            if grid[r][c] == 1:
-                perimeter += 4  # Start with the maximum perimeter for each land cell.
-
-                # Check adjacent cells and reduce the perimeter for each connected side.
-                if r > 0 and grid[r - 1][c] == 1:
-                    perimeter -= 2
-                if c > 0 and grid[r][c - 1] == 1:
-                    perimeter -= 2
-
-    return perimeter
+    """ Function to find perimiter of an island """
+    count = 0
+    for x in range(len(grid)):
+        for y in range(len(grid[x])):
+            if grid[x][y] == 1:
+                if x-1 < 0 or grid[x-1][y] == 0:
+                    count += 1
+                if x+1 >= len(grid) or grid[x+1][y] == 0:
+                    count += 1
+                if y-1 < 0 or grid[x][y-1] == 0:
+                    count += 1
+                if y+1 >= len(grid[x]) or grid[x][y+1] == 0:
+                    count += 1
+    return (count)
+	
