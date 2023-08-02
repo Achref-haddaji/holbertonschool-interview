@@ -1,39 +1,44 @@
 #include "binary_trees.h"
-#define MAX(x, y) ((x) > (y) ? (x) : (y))
-#define ABS(x) ((x) > 0 ? (x) : (-(x)))
 
 /**
- * is_avl - recursively checks if tree is AVL
- * @tree: pointer to current root
- * @min: current min val
- * @max: current max val
- * @height: height of this tree by address
- * Return: true if is AVL else 0
- */
-int is_avl(const binary_tree_t *tree, int min, int max, int *height)
+* avl_check - checks if BST is a valid AVL tree
+* @node: node of a tree
+* @min: value of min node
+* @max: value of max node
+* @height: height of the tree
+* Return: 1 if it is AVL tree, 0 otherwise
+*/
+int avl_check(const binary_tree_t *node, int min, int max, int *height)
 {
-	int h1 = 0, h2 = 0;
+	int height_l, height_r;
 
-	if (!tree)
+	height_r = 0;
+	height_l = 0;
+
+	if (!node)
 		return (1);
-	if (tree->n <= min || tree->n >= max)
+	if (node->n <= min || node->n >= max)
 		return (0);
-	if (!is_avl(tree->left, min, tree->n, &h1) ||
-			!is_avl(tree->right, tree->n, max, &h2))
+	if (!avl_check(node->left, min, node->n, &height_l) ||
+			!avl_check(node->right, node->n, max, &height_r))
 		return (0);
-	*height = MAX(h1, h2) + 1;
-	return (ABS(h1 - h2) <= 1);
+	if (height_l > height_r)
+		*height = height_l + 1;
+	else
+		*height = height_r + 1;
+	return (abs(height_l - height_r) < 2);
 }
+
 /**
- * binary_tree_is_avl - checks if a binary tree is a valid AVL Tree
- * @tree: pointer to the root node of the tree to check
- * Return: 1 if AVL else 0
+ * binary_tree_is_avl - function that checks if a
+ * binary tree is a valid AVL Tree
+ * @tree: binary tree
+ * Return: 1 if tree is a valid AVL Tree, and 0 otherwise
  */
 int binary_tree_is_avl(const binary_tree_t *tree)
 {
-	int height;
+	int height = 0;
 
 	if (!tree)
 		return (0);
-	return (is_avl(tree, INT_MIN, INT_MAX, &height));
-}
+	return (avl_check(tree, INT_MIN, INT_MAX, &height));
